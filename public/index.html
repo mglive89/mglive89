@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcio Agents - Notizie Calcio & AI in Tempo Reale</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #dc2626;
+            --accent: #0ea5e9;
+            --dark: #0f172a;
+            --light: #f1f5f9;
+            --success: #16a34a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            padding: 20px 0;
+            border-bottom: 3px solid #dc2626;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #0ea5e9 0%, #dc2626 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .agents-status {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .agent-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #10b981;
+        }
+
+        .agent-badge.active::before {
+            content: '●';
+            color: #10b981;
+            font-size: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 60px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #0ea5e9 0%, #dc2626 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9 0%, #1e3a8a 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #dc2626;
+            color: #dc2626;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            padding: 40px 20px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #0ea5e9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2::before {
+            content: '⚽';
+            font-size: 28px;
+        }
+
+        .section.tech h2::before {
+            content: '🤖';
+        }
+
+        .section.agents h2::before {
+            content: '🔧';
+        }
+
+        .article-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .article-card:hover {
+            border-color: #0ea5e9;
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .article-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+        }
+
+        .article-card .meta {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .article-card .source {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .article-card p {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .agent-widget {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .agent-widget h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #0ea5e9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .agent-widget .status {
+            padding: 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .agent-widget .status.running {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .agent-widget .status.idle {
+            border-left-color: #94a3b8;
+            background: rgba(148, 163, 184, 0.1);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat {
+            padding: 10px;
+            background: rgba(14, 165, 233, 0.1);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0ea5e9;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        /* Grid responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+            margin-left: 5px;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1); }
+        }
+
+        .timestamp {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .refresh-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #10b981;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-top: 2px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state .spinner {
+            margin: 0 auto 20px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">⚽ CALCIO AGENTS</div>
+            <div class="agents-status">
+                <div class="agent-badge active">
+                    <span>⚽ Calcio</span>
+                </div>
+                <div class="agent-badge active">
+                    <span>🤖 AI/Tech</span>
+                </div>
+                <div class="agent-badge active">
+                    <span>🎨 Designer</span>
+                </div>
+                <div class="agent-badge active">
+                    <span>🐛 QA</span>
+                </div>
+                <div class="agent-badge active">
+                    <span>⚙️ Orchestrator</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Calcio & AI in Tempo Reale</h1>
+            <p>5 Agenti Autonomi Lavorano per Te • Serie A • Champions League • Ultime Notizie di AI</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary" onclick="scrollToSection('football')">📰 Ultime Notizie</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('tech')">🤖 News Tecnologia</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Left Column: Articles -->
+            <main>
+                <!-- Football Section -->
+                <section class="section" id="football">
+                    <h2>Notizie Calcio</h2>
+                    <div id="football-articles">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Agente Calcio sta raccogliendo le ultime notizie...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tech Section -->
+                <section class="section tech" id="tech">
+                    <h2>Notizie Tecnologia & AI</h2>
+                    <div id="tech-articles">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Agente Tech sta cercando gli ultimi sviluppi...</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Right Column: Sidebar -->
+            <aside class="sidebar">
+                <!-- Agents Status -->
+                <section class="agent-widget agents">
+                    <h3>⚙️ Agenti Attivi</h3>
+
+                    <div id="agent-calcio">
+                        <div class="status running">✓ Agente Calcio - Attivo</div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-value" id="calcio-count">0</div>
+                                <div class="stat-label">Articoli</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="calcio-time">--:--</div>
+                                <div class="stat-label">Aggiornamento</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="agent-tech" style="margin-top: 15px;">
+                        <div class="status running">✓ Agente Tech/AI - Attivo</div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-value" id="tech-count">0</div>
+                                <div class="stat-label">Articoli</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="tech-time">--:--</div>
+                                <div class="stat-label">Aggiornamento</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="agent-designer" style="margin-top: 15px;">
+                        <div class="status running">✓ Agente Designer - Attivo</div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-value">🎨</div>
+                                <div class="stat-label">UI/UX</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">✓</div>
+                                <div class="stat-label">Tema</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="agent-qa" style="margin-top: 15px;">
+                        <div class="status running">✓ Agente QA/Bug - Attivo</div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-value" id="qa-bugs">0</div>
+                                <div class="stat-label">Bug Tracciati</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="qa-status">OK</div>
+                                <div class="stat-label">Status</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="agent-orchestrator" style="margin-top: 15px;">
+                        <div class="status running">✓ Orchestrator - Attivo</div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-value" id="orch-tasks">0</div>
+                                <div class="stat-label">Task</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="orch-health">100%</div>
+                                <div class="stat-label">Salute</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- System Status -->
+                <section class="agent-widget">
+                    <h3>📊 Sistema</h3>
+                    <div class="refresh-indicator">
+                        <div class="spinner"></div>
+                        <span id="last-update">Inizializzazione...</span>
+                    </div>
+                    <div class="timestamp">
+                        Aggiornato: <span id="timestamp">--:--:--</span>
+                    </div>
+                </section>
+
+                <!-- Info Box -->
+                <section class="agent-widget">
+                    <h3>ℹ️ Come Funziona</h3>
+                    <p style="font-size: 13px; color: #cbd5e1;">
+                        5 agenti autonomi lavorano continuamente per:
+                        <br><br>
+                        ⚽ <strong>Calcio:</strong> Raccoglie notizie Serie A e Champions<br>
+                        🤖 <strong>Tech/AI:</strong> Trova ultimi sviluppi di IA<br>
+                        🎨 <strong>Designer:</strong> Mantiene la UI moderna e bella<br>
+                        🐛 <strong>QA:</strong> Monitora e riporta errori<br>
+                        ⚙️ <strong>Orchestrator:</strong> Coordina tutti gli agenti
+                    </p>
+                </section>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+
+        // Initializza la pagina
+        async function init() {
+            updateTimestamp();
+            await loadContent();
+            setInterval(updateTimestamp, 1000);
+            setInterval(loadContent, 30000); // Aggiorna ogni 30 secondi
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('timestamp').textContent = now.toLocaleTimeString('it-IT');
+        }
+
+        async function loadContent() {
+            try {
+                const response = await fetch(`${API_BASE}/content`);
+                const data = await response.json();
+
+                if (data.football && data.football.length > 0) {
+                    renderArticles('football-articles', data.football);
+                    document.getElementById('calcio-count').textContent = data.football.length;
+                }
+
+                if (data.tech && data.tech.length > 0) {
+                    renderArticles('tech-articles', data.tech);
+                    document.getElementById('tech-count').textContent = data.tech.length;
+                }
+
+                if (data.stats) {
+                    document.getElementById('last-update').textContent = data.stats.lastUpdate || 'Aggiornamento in corso...';
+                    document.getElementById('orch-tasks').textContent = data.stats.tasksCompleted || 0;
+                }
+            } catch (error) {
+                console.log('Sistema offline - Mostrando contenuto locale');
+            }
+        }
+
+        function renderArticles(containerId, articles) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = articles.map(article => `
+                <div class="article-card">
+                    <h3>${article.title}</h3>
+                    <div class="meta">
+                        <span>${article.date}</span>
+                        <span class="source">${article.category}</span>
+                    </div>
+                    <p>${article.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Demo articles se l'API non è disponibile
+        async function loadDemoContent() {
+            const demoFootball = [
+                {
+                    title: "Inter domina il Derby: 3-1 al Milan",
+                    date: "Oggi",
+                    category: "Serie A",
+                    description: "L'Inter conquista il derby di Milano con una prestazione dominante. Lautaro Martinez segna due gol decisivi."
+                },
+                {
+                    title: "Real Madrid avanza in Champions League",
+                    date: "Ieri",
+                    category: "Champions",
+                    description: "Il Real Madrid batte il Manchester City 2-1 con un gol al 90° di Benzema nei quarti di finale."
+                },
+                {
+                    title: "Napoli, rinforzamenti per il prossimo campionato",
+                    date: "2 giorni fa",
+                    category: "Calciomercato",
+                    description: "Il Napoli accelera per i colpi del mercato estivo, nel mirino un attaccante di prim'ordine europeo."
+                }
+            ];
+
+            const demoTech = [
+                {
+                    title: "Claude AI raggiunge nuovi milestone in reasoning",
+                    date: "Oggi",
+                    category: "AI",
+                    description: "Anthropic annuncia importanti miglioramenti nelle capacità di ragionamento di Claude con latenza ridotta."
+                },
+                {
+                    title: "OpenAI annuncia GPT-5 con capacità multimodali avanzate",
+                    date: "Ieri",
+                    category: "IA Generativa",
+                    description: "Nuovo modello capace di elaborare e generare contenuti complessi in più modalità simultaneamente."
+                },
+                {
+                    title: "Il Machine Learning riduce il consumo energetico di Google",
+                    date: "2 giorni fa",
+                    category: "Green AI",
+                    description: "Google utilizza ML per ottimizzare i data center, riducendo i consumi del 40%."
+                }
+            ];
+
+            renderArticles('football-articles', demoFootball);
+            renderArticles('tech-articles', demoTech);
+            document.getElementById('calcio-count').textContent = demoFootball.length;
+            document.getElementById('tech-count').textContent = demoTech.length;
+        }
+
+        // Avvia l'app
+        init();
+        // Carica demo content come fallback
+        setTimeout(loadDemoContent, 2000);
+    </script>
+</body>
+</html>

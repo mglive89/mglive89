@@ -1,0 +1,19 @@
+{
+  "name": "calcio-agents",
+  "version": "1.0.0",
+  "description": "Landing page dinamica con 5 agenti autonomi per notizie calcio e AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "agents": "node agents/orchestrator.js"
+  },
+  "keywords": ["calcio", "ai", "agents", "automation"],
+  "author": "Marco Gallo",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  }
+}
