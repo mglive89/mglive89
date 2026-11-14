@@ -1,0 +1,5 @@
+build/
+output/*.mp4
+output/preview/
+__pycache__/
+*.pyc
